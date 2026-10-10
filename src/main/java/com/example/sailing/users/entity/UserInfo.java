@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="USER_IDFO_ID")
     private Long userIdfoId;
 
     @OneToOne(fetch = FetchType.LAZY)
