@@ -17,8 +17,8 @@ import jakarta.persistence.Table;
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="USER_IDFO_ID")
-    private Long userIdfoId;
+    @Column(name="USER_INFO_ID")
+    private Long userInfoId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -51,7 +51,7 @@ public class UserInfo {
         this.updatedAt = LocalDateTime.now();
     }
     // Getters
-    public Long getUserInfoId() {return userIdfoId;}
+    public Long getUserInfoId() {return userInfoId;}
     public User getUser() {return user;}
     public String getNickname() {return nickname;} 
     public LocalDate getBirthDate() {return birthDate;}

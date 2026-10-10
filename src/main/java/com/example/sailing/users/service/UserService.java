@@ -75,39 +75,45 @@ public class UserService {
             throw new IllegalArgumentException("필수사항입니다. 선택해주세요.");
         }
 
-    
-    // 비밀번호 해싱, 암호화
-    String passwordHash = passwordEncoder.encode(request.password());
+        
+        // 비밀번호 해싱, 암호화
+        String passwordHash = passwordEncoder.encode(request.password());
 
-    // 사용자 엔티티 생성(USERS 테이블에 저장될 객체)
-    User user = new User(
-        request.loginId(),
-        passwordHash,
-        request.name(),
-        request.email(),
-        request.phone(),
-        UserRole.USER, 
-        UserStatus.ACTIVE 
-    );
+        // 사용자 엔티티 생성(USERS 테이블에 저장될 객체)
+        User user = new User(
+            request.loginId(),
+            passwordHash,
+            request.name(),
+            request.email(),
+            request.phone(),
+            UserRole.USER, 
+            UserStatus.ACTIVE 
+        );
 
-    // db에 저장하기(UserRepository에 사용자 먼저 저장해야 UserId가 생성됨)
-    userRepository.save(user);
+        // db에 저장하기(UserRepository에 사용자 먼저 저장해야 UserId가 생성됨)
+        userRepository.save(user);
 
-    //USER_INFO 테이블에 저장될 객체 생성
-    UserInfo userInfo = new UserInfo(
-        user,
-        request.nickname(),
-        birthDate,
-        request.gender(),
-        request.nationality()
-    );
-    // db에 저장하기(UserInfoRepository에 사용자 정보 저장)
-    userInfoRepository.save(userInfo);
+        //USER_INFO 테이블에 저장될 객체 생성
+        UserInfo userInfo = new UserInfo(
+            user,
+            request.nickname(),
+            birthDate,
+            request.gender(),
+            request.nationality()
+        );
+        // db에 저장하기(UserInfoRepository에 사용자 정보 저장)
+        userInfoRepository.save(userInfo);
 
-    // 생성된 사용자 ID 반환 (Controller는 이 반환값을 받아 HTTP 응답으로 전달)
-    return user.getUserId();
-}
-
+        // 생성된 사용자 ID 반환 (Controller는 이 반환값을 받아 HTTP 응답으로 전달)
+        return user.getUserId();
+    }
+    // 아이디 중복 확인
+    public boolean existsByLoginId(String loginId){
+        if(loginId == null || loginId.isBlank()){
+            throw new IllegalArgumentException("아이디를 입력해주세요.");
+        }
+        return userRepository.existsByLoginId(loginId);
+    }
     // 모든 사용자 조회
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
