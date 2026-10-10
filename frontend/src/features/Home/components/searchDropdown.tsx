@@ -1,4 +1,4 @@
-import Icon, { type IconName } from "../../../components/common/Icon";
+import Icon, { type IconName } from "../../../components/common/icon";
 
 interface SearchDropdownProps {
   icon: IconName;

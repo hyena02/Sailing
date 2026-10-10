@@ -29,7 +29,8 @@ dependencies {
   // JPA & MariaDB 드라이버
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-
+  // 비밀번호 해싱 라이브러리 추가
+	implementation 'org.springframework.security:spring-security-crypto'
 }
 
 tasks.named('test') {

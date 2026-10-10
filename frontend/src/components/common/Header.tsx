@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Icon from "./Icon";
+import Icon from "./icon";
 import "../../styles/Header.css";
 
 // 라우터(react-router)를 붙이면 <a href> 를 <Link to> 로 바꾸면 됩니다.

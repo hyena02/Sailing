@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import Icon, { type IconName } from "../../components/common/Icon";
-import Header from "../../components/common/Header";
-import Footer from "../../components/common/Footer";
+import Icon, { type IconName } from "../../components/common/icon";
+import Header from "../../components/common/header";
+import Footer from "../../components/common/footer";
 import "../../styles/Home.css";
-import HeroSearch from "./components/HeroSearch";
-import JobCard from "./components/JobCard";
-import CompanyLogo from "./components/CompanyLogo";
+import HeroSearch from "./components/heroSearch";
+import JobCard from "./components/jobCard";
+import CompanyLogo from "./components/companyLogo";
 import { emptyHome, fetchHomeData } from "./homeApi";
 import { dDay, timeAgo } from "./homeUtils";
 import type { HomeData } from "./homeTypes";
