@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.sailing.users.dto.LoginRequest;
 import com.example.sailing.users.dto.PersonalSignupRequest;
 import com.example.sailing.users.dto.UserDTO;
 import com.example.sailing.users.entity.User;
@@ -128,5 +129,22 @@ public class UserService {
                 user.getStatus().name()
             ))
         .toList();  
+    }
+
+//login 하기
+    public User login(LoginRequest request) {
+        if(request.loginId() == null || request.loginId().isBlank() || request.password() == null || request.password().isBlank()) {
+            throw new IllegalArgumentException("아이디와 비밀번호를 입력해주세요.");
+        }
+        User user = userRepository.findByLoginId(request.loginId()).orElseThrow(() -> 
+            new IllegalArgumentException("아이디 또는 비밀번호를 확인해주세요.")
+        );
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())){
+            throw new IllegalArgumentException("아이디 또는 비밀번호를 확인해주세요.");
+        }
+        if(user.getStatus() != UserStatus.ACTIVE){
+            throw new IllegalArgumentException("로그인할 수 없는 계정입니다.");
+        }
+        return user;
     }
 }

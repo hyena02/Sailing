@@ -3,6 +3,7 @@ package com.example.sailing.users.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,14 +13,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.sailing.users.dto.LoginRequest;
+import com.example.sailing.users.dto.LoginResponse;
 import com.example.sailing.users.dto.PersonalSignupRequest;
 import com.example.sailing.users.dto.UserDTO;
+import com.example.sailing.users.entity.User;
 import com.example.sailing.users.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(
+    origins = "http://localhost:5173",
+    allowCredentials = "true"   // 자격 증명 전달 혀용 설정 : 세션 쿠키를 프론트엔드 요청에 사용함에있어서
+
+)
 public class UserController {
 
     private final UserService userService;
@@ -41,11 +52,39 @@ public class UserController {
             return userService.signupPersonal(request);
     }
 
-    // 아이디 중복 확인
+    // 아이디 중복 확인(회원가입)
     @GetMapping("/check-login-id")
     public boolean  checkLoginId(@RequestParam String loginId) {
         return userService.existsByLoginId(loginId);
     }
+
+    // 로그인창
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) { 
+        try {
+            User user = userService.login(request);
+
+            // 기존 세션이 있으면 새 세션 발급되게
+            HttpSession oldSession = httpRequest.getSession(false);
+            if(oldSession != null ) {
+                oldSession.invalidate();
+            }
+            HttpSession session = httpRequest.getSession(true);
+            session.setAttribute("LOGIN_USER_ID", user.getUserId());
+            session.setAttribute("LOGIN_ROLE", user.getRole().name());
+            
+            return ResponseEntity.ok(new LoginResponse(
+                user.getUserId(),
+                user.getLoginId(),
+                user.getName(),
+                user.getRole().name()
+            ));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401)
+                .body(java.util.Map.of("message", e.getMessage()));
+        }
+    }//login
     
 
 }

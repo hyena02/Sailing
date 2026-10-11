@@ -72,6 +72,7 @@ public class User {
 
     public Long getUserId() { return userId; }
     public String getLoginId() { return loginId; }
+    public String getPasswordHash() {return passwordHash; }
     public String getName() { return name; }
     public String getEmail() { return email; }
     public String getPhone() { return phone; }
