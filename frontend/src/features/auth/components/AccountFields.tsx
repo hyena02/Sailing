@@ -1,6 +1,6 @@
 import { useState } from "react";
-import FormField from "../../auth/components/formField";
-import PasswordField from "../../auth/components/passwordField";
+import FormField from "./formField";
+import PasswordField from "./passwordField";
 
 interface AccountFieldsProps {
   username: string; 

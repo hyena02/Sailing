@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "./components/authLayout";
-import PasswordField from "./components/passwordField";
-import FormField from "./components/formField";
-import Icon from "../../components/common/icon";
+import AuthLayout from "../components/authLayout";
+import PasswordField from "../components/passwordField";
+import FormField from "../components/formField";
+import Icon from "../../../components/common/icon";
+import { login } from "../authApi";
 
 export default function Login() {
   const navigate = useNavigate();

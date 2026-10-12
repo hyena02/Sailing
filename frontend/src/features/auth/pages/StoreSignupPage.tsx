@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../auth/components/authLayout";
-import AccountFields from "./components/accountFields";
-import ChoiceGroup from "./components/choiceGroup";
-import FormField from "../auth/components/formField";
-import Icon from "../../components/common/icon";
-import { SectionHeading, SignupTop, SuccessNotice } from "./components/signupParts";
+import AuthLayout from "../components/authLayout";
+import AccountFields from "../components/AccountFields";
+import ChoiceGroup from "../components/ChoiceGroup";
+import FormField from "../components/formField";
+import Icon from "../../../components/common/icon";
+import { SectionHeading, SignupTop, SuccessNotice } from "../components/SignupParts";
 
 const initialForm = {
   vendorName: "", address: "", owner: "", phone: "", email: "", country: "대한민국", serviceScope: "",

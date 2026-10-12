@@ -1,7 +1,7 @@
 import Icon from "../../../components/common/icon";
 import type { JobItem } from "../homeTypes";
 import { dDay } from "../homeUtils";
-import CompanyLogo from "./companyLogo";
+import CompanyLogo from "./CompanyLogo";
 
 interface JobCardProps {
   job: JobItem;

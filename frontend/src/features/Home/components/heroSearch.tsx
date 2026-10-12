@@ -1,6 +1,6 @@
 import Icon from "../../../components/common/icon";
 import { HOME_ASSETS } from "../homeAssets";
-import SearchDropdown from "./searchDropdown";
+import SearchDropdown from "./SearchDropdown";
 
 interface HeroSearchProps {
   query: string;

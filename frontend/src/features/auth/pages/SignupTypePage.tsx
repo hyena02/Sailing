@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../auth/components/authLayout";
-import Icon, { type IconName } from "../../components/common/icon";
+import AuthLayout from "../components/authLayout";
+import Icon, { type IconName } from "../../../components/common/icon";
 
 const signupTypes: Array<{ type: string; path: string; icon: IconName; title: string; description: string; detail: string }> = [
   { type: "PERSONAL", path: "/signup/personal", icon: "user", title: "일반회원", description: "바다에서 새로운 커리어를 찾고 계신가요?", detail: "채용공고 지원 · 관심 공고 · 커뮤니티" },

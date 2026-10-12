@@ -1,11 +1,10 @@
-import { useState } from "react";
 import Icon from "./icon";
 import "../../styles/Header.css";
-import { userEffect, userState } from "react"
+import { useEffect, useState } from "react"
 
 // 로그인 시 회원role 표시
 type LoginUser = {
-  userId = number;
+  userId: number;
   loginId : string;
   name: string;
   role: "USER" | "COMPANY" | "STORE" | "ADMIN";
@@ -37,7 +36,7 @@ const MENUS = [
 function Header() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<LoginUser | null>(getLoginUser);
-  userEffect(() => {
+  useEffect(() => {
     const updateUser = () => setUser(getLoginUser());
     window.addEventListener("sailingAuthChange", updateUser);
     return () => {
@@ -65,7 +64,8 @@ function Header() {
 
         <div className="header-actions">
           {/* 로그인 시  띄워짐*/}
-          {user ? (
+          {user ? 
+          (
             <>
               <span className = "header-user">
                 ({ROLE_LABEL[user.role]}) {user.loginId}님
@@ -83,7 +83,8 @@ function Header() {
                 <a href="/login" className="header-login">로그인</a>
                 <a href="/signup" className="button button--outline">회원가입</a>
               </>
-          )}
+          ) 
+          }
           <a href="/jobs/new" className="button button--primary">구인공고 등록</a>
         </div>
 
