@@ -12,6 +12,8 @@ const initialForm = {
   birth: "", 
   gender: "", 
   nationality: "", 
+  email: "",
+  phone: "",
   username: "", 
   password: "", 
   confirmPassword: "" 
@@ -62,6 +64,19 @@ const validateField = (
     return value ? "" : "성별을 선택해주세요.";
   case "nationality":
     return value ? "" : "국적을 선택해주세요.";
+  case "email":
+    if (!value.trim()) return "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      return "올바른 이메일 주소를 입력해주세요.";
+    }
+    return "";
+
+  case "phone":
+    if (!value.trim()) return "";
+    if (!/^[0-9+\-()\s]{8,20}$/.test(value)) {
+      return "( 필수X )전화번호를 확인해주세요. (예: 010-1234-5678)";
+    }
+    return "";
   case "username":
     if (!value.trim()) return "아이디를 입력해주세요.";
     if (!/^[a-zA-Z0-9]{4,20}$/.test(value)) {
@@ -156,8 +171,8 @@ const update = (
       name: form.name,
       nickname: form.nickname,
       birthDate,
-      email: null, // 이메일은 선택사항이므로 null로 설정
-      phone: null, // 전화번호는 선택사항이므로 null로 설정
+      email: form.email.trim() || null, // 이메일은 선택사항 | 형식맞춘값 | null로 설정
+      phone: form.phone.trim() || null, // 전화번호 선택사항 | 형식맞춘값 | null로 설정
       gender: form.gender === "남성" ? "M" : "F",
       nationality: form.nationality === "내국인" ? "DOMESTIC" : "FOREIGN"
     };
@@ -211,6 +226,12 @@ const update = (
           <div className="form-grid">
             <ChoiceGroup label="성별" options={["남성", "여성"]} value={form.gender} onChange={(value) => update("gender", value)} />
             <ChoiceGroup label="국적" options={["내국인", "외국인"]} value={form.nationality} onChange={(value) => update("nationality", value)} />
+          </div>
+          <div className ="form-grid">
+            <FormField label="이메일" name="email" type="email" value={form.email} onChange={(value)=> update("email", value)}
+              placeholder="example@email.com" hint ="선택 입력, 이메일 주소를 입력해주세요." error={errors.email} />
+            <FormField label="전화번호" name="phone" type="tel" value={form.phone} onChange={(value) => update("phone", value)}
+              placeholder="010-1234-5678" hint = "선택 사항, 연락 가능한 번호를 입력해주세요. 해외번호불가능" error={errors.phone} maxLength={20} />
           </div>
         </div>
         <AccountFields username={form.username} password={form.password} confirmPassword={form.confirmPassword}

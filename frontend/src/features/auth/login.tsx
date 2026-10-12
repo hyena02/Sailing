@@ -11,23 +11,91 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 로그인 버튼을 누르면 backend login API 호출
+  const handleLogin = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    setMessage("");
+
+    if(!username.trim() || !password){
+      setMessage("아이디와 비밀번호를 입력해주세요.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // 서버가 발급한 세션 쿠키 주고받기
+          credentials: "include",
+          body: JSON.stringify({
+            loginId: username.trim(),
+            password: password,
+          }),
+        }
+      );
+      // 서버에서 보내는 응답 읽기
+      const data = await response.json().catch(() => null);
+      //로그인 실패 시
+      if (!response.ok){
+        throw new Error(
+          data?.message || `로그인에 실패했습니다. (${response.status})`
+        );
+      }
+      //로그인 성공 시
+      navigate("/", {replace: true});
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      
+      setMessage(
+        error instanceof TypeError
+          ? "서버에 연결할 수 없습니다. 실행 상태를 확인해주세요."
+          : error instanceof Error
+            ? error.message
+            : "로그인 중 오류가 발생했습니다."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
   return (
     <AuthLayout title="다시, 바다를 향한 항해">
       <div className="auth-heading">
         <span>WELCOME BACK</span><h1>로그인</h1><p>SAILING 계정으로 새로운 기회를 확인하세요.</p>
       </div>
-      <form className="auth-form auth-form--login" onSubmit={(event) => { event.preventDefault(); setMessage("로그인 API 연결 후 이용할 수 있습니다."); }}>
-        <FormField label="아이디" name="username" value={username} onChange={setUsername} placeholder="아이디를 입력해주세요" required />
-        <PasswordField value={password} onChange={setPassword} showChecklist={false} />
+      <form className="auth-form auth-form--login" onSubmit={handleLogin}>
+        <FormField label="아이디" name="username" value={username} 
+          onChange={setUsername} placeholder="아이디를 입력해주세요" required />
+        <PasswordField value={password} 
+          onChange={setPassword} showChecklist={false} />
         <div className="login-options">
-          <label className="check-label"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} /><span />로그인 상태 유지</label>
-          <div><button type="button">아이디 찾기</button><i /><button type="button">비밀번호 찾기</button></div>
+          <label className="check-label">
+            <input type="checkbox" checked={remember} 
+              onChange={(event) => setRemember(event.target.checked)} />
+            <span />로그인 상태 유지</label>
+          <div>
+            <button type="button">아이디 찾기</button><i />
+            <button type="button">비밀번호 찾기</button>
+          </div>
         </div>
         {message && <div className="form-notice"><Icon name="bell" size={17} />{message}</div>}
-        <button className="auth-submit" type="submit">로그인하기 <Icon name="arrow" size={18} /></button>
+        <button className="auth-submit" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "로그인 중..." : "로그인하기"}
+          <Icon name="arrow" size={18} />
+        </button>
       </form>
-      <div className="auth-switch"><span>아직 SAILING 회원이 아니신가요?</span><button onClick={() => navigate("/signup")}>회원가입하기</button></div>
+      <div className="auth-switch">
+        <span>아직 SAILING 회원이 아니신가요?</span>
+        <button onClick={() => navigate("/signup")}>회원가입하기</button>
+      </div>
     </AuthLayout>
   );
 }
