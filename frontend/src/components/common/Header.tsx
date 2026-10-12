@@ -1,6 +1,7 @@
 import Icon from "./icon";
-import "../../styles/Header.css";
+import "../../styles/header.css";
 import { useEffect, useState } from "react"
+import {useNavigate} from "react-router-dom"
 
 // 로그인 시 회원role 표시
 type LoginUser = {
@@ -34,8 +35,29 @@ const MENUS = [
 ];
 
 function Header() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<LoginUser | null>(getLoginUser);
+  const handelMyPage = () => {
+    if(!user){
+      navigate("/login"); 
+      return;
+    }
+    switch (user.role) {
+      case "USER":
+        navigate("/mypage/personal");
+        break;
+      case "COMPANY":
+        navigate("/mypage/company");
+        break;
+      case "STORE":
+        navigate("/mypage/stroe");
+        break;
+      case "ADMIN":
+        navigate("/mypage/admin");
+        break;
+    }
+  }
   useEffect(() => {
     const updateUser = () => setUser(getLoginUser());
     window.addEventListener("sailingAuthChange", updateUser);
@@ -64,16 +86,27 @@ function Header() {
 
         <div className="header-actions">
           {/* 로그인 시  띄워짐*/}
-          {user ? 
-          (
+          {user ? (
             <>
-              <span className = "header-user">
-                ({ROLE_LABEL[user.role]}) {user.loginId}님
-              </span>
+              <button type="button" className="header-profile-button"
+                onClick={handelMyPage} aria-label="마이페이지로 이동">
+                <span className="header-profile-avatar">
+                  <Icon name="user" size={18} />
+                </span>
+                <span className = "header-profile-text">
+                  <span className="header-profile-role">
+                  {ROLE_LABEL[user.role]} 
+                  </span>
+                  <strong>{user.loginId}님</strong>
+                </span>
+                <Icon name="chevron" size={16} />
+              </button>
               <button type="button" className="button-logout" 
                 onClick={() => {
                   sessionStorage.removeItem("sailingUser");
-                  window.dispatchEvent(new Event("sailingAuthChange"));}}>
+                  window.dispatchEvent(new Event("sailingAuthChange"));
+                  navigate("/")}}
+              >
                 로그아웃
               </button>
             </>
@@ -83,7 +116,7 @@ function Header() {
                 <a href="/login" className="header-login">로그인</a>
                 <a href="/signup" className="button button--outline">회원가입</a>
               </>
-          ) 
+            ) 
           }
           <a href="/jobs/new" className="button button--primary">구인공고 등록</a>
         </div>

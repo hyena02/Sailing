@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sailing.company.service.CompanyService;
-import com.example.sailing.company.dto.CompanySignupRequest;
+import com.example.sailing.company.dto.ComSignupRequest;
 
 
 @RestController 
@@ -20,15 +20,15 @@ import com.example.sailing.company.dto.CompanySignupRequest;
     origins = "http://localhost:5173",
     allowCredentials = "true"
 )
-public class CompanyController {
+public class ComController {
     private final CompanyService companyService;
 
-    public CompanyController(CompanyService companyService){
+    public ComController(CompanyService companyService){
         this.companyService = companyService;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody CompanySignupRequest request) {
+    public ResponseEntity<?> signup(@RequestBody ComSignupRequest request) {
         
         try {
             Long userId = companyService.signup(request);

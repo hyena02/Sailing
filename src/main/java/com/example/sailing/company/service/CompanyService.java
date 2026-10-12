@@ -3,7 +3,7 @@ package com.example.sailing.company.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.sailing.company.dto.CompanySignupRequest;
+import com.example.sailing.company.dto.ComSignupRequest;
 import com.example.sailing.company.entity.CompanyInfo;
 import com.example.sailing.company.repository.CompanyInfoRepository;
 import com.example.sailing.users.entity.User;
@@ -28,7 +28,7 @@ public class CompanyService {
         this.passwordEncoder = passwordEncoder;
     }
     @Transactional
-    public Long signup(CompanySignupRequest request){
+    public Long signup(ComSignupRequest request){
 
         // 1. 공통 회원 정보 검증
         if (request.loginId() == null || request.loginId().isBlank()) {

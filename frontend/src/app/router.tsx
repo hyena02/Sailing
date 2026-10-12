@@ -34,7 +34,7 @@ export const router = createBrowserRouter([
     }),
   },
   {
-    path: "/signup/vendor",
+    path: "/signup/store",
     lazy: async () => ({
       Component: (await import("../features/auth/pages/StoreSignupPage")).default,
     }),
@@ -42,8 +42,43 @@ export const router = createBrowserRouter([
   {
     path: "/users",
     lazy: async () => ({
-      Component: (await import("../features/User/UserListPage")).default,
+      Component: (await import("../features/users/UserListPage")).default,
     }),
   },
+  {
+    path: "/mypage/personal",
+    lazy: async () => ({
+      Component: (
+        await import("../features/mypage/personal/PersonalMyPage")).default,
+    }),
+  },
+  {
+    path: "/mypage/personal/likes",
+    lazy: async () => {
+      const PersonalActivityPage = (
+        await import("../features/mypage/personal/PersonalActivityPage")
+      ).default;
+
+      return {
+        Component: () => <PersonalActivityPage type="likes" />,
+      };
+    },
+  },
+  {
+    path: "/mypage/personal/writing",
+    lazy: async () => {
+      const PersonalActivityPage = (
+        await import("../features/mypage/personal/PersonalActivityPage")
+      ).default;
+
+      return {
+        Component: () => <PersonalActivityPage type="writing" />,
+      };
+    },
+  },
+
+
+
+
   { path: "*", element: <Navigate to="/" replace /> },
 ]);

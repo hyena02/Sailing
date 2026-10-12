@@ -78,4 +78,16 @@ public class User {
     public String getPhone() { return phone; }
     public UserRole getRole() { return role; }
     public UserStatus getStatus() { return status; }
+
+
+    //mypage에서 수정 가능한 컬럼
+    public void updatePersonalContactInfo(
+        String name,
+        String email,
+        String phone
+    ){
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
 }

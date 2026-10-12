@@ -1,6 +1,6 @@
 package com.example.sailing.company.dto;
 
-public record CompanySignupRequest(
+public record ComSignupRequest(
     String loginId,
     String password,
     String name,

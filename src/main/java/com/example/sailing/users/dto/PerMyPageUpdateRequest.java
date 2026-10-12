@@ -1,15 +1,14 @@
 package com.example.sailing.users.dto;
 
-public record PersonalSignupRequest(
-    String loginId,
-    String password,
+public record PerMyPageUpdateRequest(
     String name,
     String email,
     String phone,
     String nickname,
     String birthDate,
     String gender,
-    String nationality
+    String nationality,
+    String address,
+    String introduction
 ) {
-
 }

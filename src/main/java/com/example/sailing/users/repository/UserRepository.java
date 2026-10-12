@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     // 로그인 -> 회원 비밀번호 해시와 계정상태 확인해야하기때문에 User객체를 조회해야하는 용도
     Optional<User> findByLoginId(String loginId);
+    // 본인 외 다른 회원이 같은 이메일을 사용하고 있는지 확인
+    boolean existsByEmailAndUserIdNot(String email, Long userId);
 }

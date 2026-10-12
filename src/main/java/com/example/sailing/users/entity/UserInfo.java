@@ -36,12 +36,15 @@ public class UserInfo {
     private LocalDateTime createdAt;
     @Column(name="UPDATED_AT", nullable = false)
     private LocalDateTime updatedAt;
-
+    @Column(name="INTRODUCTION", length = 1000)
+    private String introduction;
+    
     protected UserInfo() {
         // JPA requires a default constructor
     }
+
     // 생성자
-    public UserInfo(User user, String nickname, LocalDate birthDate, String gender, String nationality) {
+    public UserInfo(User user, String nickname, LocalDate birthDate, String gender, String nationality, String introduction) {
         this.user = user;
         this.nickname = nickname;
         this.birthDate = birthDate;
@@ -49,6 +52,7 @@ public class UserInfo {
         this.nationality = nationality;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.introduction = introduction;
     }
     // Getters
     public Long getUserInfoId() {return userInfoId;}
@@ -59,6 +63,20 @@ public class UserInfo {
     public String getNationality() {return nationality;}
     public LocalDateTime getCreatedAt() {return createdAt;}
     public LocalDateTime getUpdatedAt() {return updatedAt;}
+    public String getIntroduction() {return introduction;}
 
-
+    //mypage에서 수정가능한 정보
+    public void updatePersonalInfo(
+        String nickname,
+        LocalDate birthDate,
+        String gender,
+        String nationality,
+        String introduction
+    ){
+        this.nickname = nickname;
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.nationality = nationality;
+        this.introduction = introduction;
+    }
 }

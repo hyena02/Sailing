@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.sailing.users.dto.LoginRequest;
-import com.example.sailing.users.dto.PersonalSignupRequest;
+import com.example.sailing.users.dto.PerSignupRequest;
 import com.example.sailing.users.dto.UserDTO;
 import com.example.sailing.users.entity.User;
 import com.example.sailing.users.entity.UserInfo;
@@ -38,7 +38,7 @@ public class UserService {
 
 // 일반회원가입
     @Transactional
-    public Long signupPersonal(PersonalSignupRequest request) {
+    public Long signupPersonal(PerSignupRequest request) {
 
         // loginId 필수 확인
         if (request.loginId() == null || request.loginId().isBlank()){
@@ -100,7 +100,8 @@ public class UserService {
             request.nickname(),
             birthDate,
             request.gender(),
-            request.nationality()
+            request.nationality(),
+            request.introduction()
         );
         // db에 저장하기(UserInfoRepository에 사용자 정보 저장)
         userInfoRepository.save(userInfo);

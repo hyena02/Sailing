@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sailing.users.dto.LoginRequest;
 import com.example.sailing.users.dto.LoginResponse;
-import com.example.sailing.users.dto.PersonalSignupRequest;
+import com.example.sailing.users.dto.PerSignupRequest;
 import com.example.sailing.users.dto.UserDTO;
 import com.example.sailing.users.entity.User;
 import com.example.sailing.users.service.UserService;
@@ -48,7 +48,7 @@ public class UserController {
     // 일반 회원 가입
     @PostMapping("/signup/personal")            // 회원가입 요청을 받을 주소
     @ResponseStatus(HttpStatus.CREATED)        // 회원가입 성공 시 HTTP 상태 코드 201 반환(Created)
-    public Long signupPersonal(@RequestBody PersonalSignupRequest request) {     // RequestBody Frontend가 보낸 JSON Data를 Java 객체로 변환
+    public Long signupPersonal(@RequestBody PerSignupRequest request) {     // RequestBody Frontend가 보낸 JSON Data를 Java 객체로 변환
             return userService.signupPersonal(request);
     }
 
