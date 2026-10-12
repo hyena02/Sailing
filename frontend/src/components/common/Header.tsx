@@ -1,6 +1,30 @@
 import { useState } from "react";
 import Icon from "./icon";
 import "../../styles/Header.css";
+import { userEffect, userState } from "react"
+
+// 로그인 시 회원role 표시
+type LoginUser = {
+  userId = number;
+  loginId : string;
+  name: string;
+  role: "USER" | "COMPANY" | "STORE" | "ADMIN";
+}
+const ROLE_LABEL: Record<LoginUser["role"], string> = {
+  USER: "일반 회원",
+  COMPANY: "선사·기업 회원",
+  STORE: "선식·선용품 업체",
+  ADMIN: "관리자",
+};
+
+function getLoginUser(): LoginUser | null {
+  try {
+    const saved = sessionStorage.getItem("sailingUser");
+    return saved ? (JSON.parse(saved) as LoginUser) : null;
+  } catch {
+    return null;
+  }
+}
 
 // 라우터(react-router)를 붙이면 <a href> 를 <Link to> 로 바꾸면 됩니다.
 const MENUS = [
@@ -12,6 +36,14 @@ const MENUS = [
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<LoginUser | null>(getLoginUser);
+  userEffect(() => {
+    const updateUser = () => setUser(getLoginUser());
+    window.addEventListener("sailingAuthChange", updateUser);
+    return () => {
+      window.removeEventListener("sailingAuthChange", updateUser);
+    };
+  },[]);
 
   return (
     <header className="header">
@@ -32,8 +64,26 @@ function Header() {
         </nav>
 
         <div className="header-actions">
-          <a href="/login" className="header-login">로그인</a>
-          <a href="/signup" className="button button--outline">회원가입</a>
+          {/* 로그인 시  띄워짐*/}
+          {user ? (
+            <>
+              <span className = "header-user">
+                ({ROLE_LABEL[user.role]}) {user.loginId}님
+              </span>
+              <button type="button" className="button-logout" 
+                onClick={() => {
+                  sessionStorage.removeItem("sailingUser");
+                  window.dispatchEvent(new Event("sailingAuthChange"));}}>
+                로그아웃
+              </button>
+            </>
+            ) : (
+              <>
+                {/* 비로그인 시 띄워짐 */}
+                <a href="/login" className="header-login">로그인</a>
+                <a href="/signup" className="button button--outline">회원가입</a>
+              </>
+          )}
           <a href="/jobs/new" className="button button--primary">구인공고 등록</a>
         </div>
 

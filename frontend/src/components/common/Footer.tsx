@@ -1,6 +1,7 @@
 import Icon from "./icon";
 import "../../styles/Footer.css";
 
+
 function Footer() {
   return (
     <footer className="home-footer">

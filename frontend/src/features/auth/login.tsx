@@ -26,34 +26,19 @@ export default function Login() {
     }
     setIsSubmitting(true);
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/users/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          // 서버가 발급한 세션 쿠키 주고받기
-          credentials: "include",
-          body: JSON.stringify({
-            loginId: username.trim(),
-            password: password,
-          }),
-        }
-      );
-      // 서버에서 보내는 응답 읽기
-      const data = await response.json().catch(() => null);
-      //로그인 실패 시
-      if (!response.ok){
-        throw new Error(
-          data?.message || `로그인에 실패했습니다. (${response.status})`
-        );
-      }
-      //로그인 성공 시
-      navigate("/", {replace: true});
+      const data = await login(username.trim(), password);
+
+      // 로그인한 사용자 정보를 저장
+      sessionStorage.setItem("sailingUser", JSON.stringify(data));
+
+      // 헤더가 사용자 정보를 다시 읽도록 알림
+      window.dispatchEvent(new Event("sailingAuthChange"));
+
+      // 로그인 성공 시 홈으로 이동
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("로그인 오류:", error);
-      
+
       setMessage(
         error instanceof TypeError
           ? "서버에 연결할 수 없습니다. 실행 상태를 확인해주세요."
