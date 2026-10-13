@@ -54,4 +54,19 @@ public class CompanyInfo {
     public void setVerificationStatus(VerificationStatus verificationStatus) { this.verificationStatus = verificationStatus;}
     public LocalDateTime getCreatedAt() {return createdAt;}
     public LocalDateTime getUpdatedAt() {return updatedAt;}
-}
+
+
+    //mypage에서 수정 가능한 정보
+    public void updateComInfo(
+        String companyName,
+        String address,
+        String logoImage
+
+    ){
+        this.companyName = companyName;
+        this.address = address;
+        this.logoImage = logoImage;
+    }
+}//
+
+

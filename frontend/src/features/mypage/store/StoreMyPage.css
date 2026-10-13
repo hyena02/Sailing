@@ -1,0 +1,76 @@
+.store-mypage {
+  --store-accent: var(--cyan-600, #0891b2);
+}
+
+.store-mypage-banner {
+  background:
+    radial-gradient(circle at 82% 8%, rgba(34, 211, 238, 0.2), transparent 28%),
+    var(--navy-950, #061d32);
+}
+
+.store-mypage-layout {
+  padding-bottom: 24px;
+}
+
+.store-profile-avatar {
+  color: var(--cyan-600, #0891b2);
+  background: rgba(34, 211, 238, 0.12);
+  border-radius: var(--radius-md, 12px);
+}
+
+.store-mypage-sidebar .profile-summary > span {
+  color: var(--cyan-600, #0891b2);
+}
+
+.store-mypage-sidebar nav button {
+  cursor: pointer;
+}
+
+.store-profile-card .profile-form-grid select {
+  min-height: 43px;
+}
+
+.store-profile-card .profile-field textarea {
+  min-height: 108px;
+  resize: vertical;
+}
+
+.store-verification {
+  margin-top: 0;
+}
+
+.store-profile-card .partner-profile-editor > label input {
+  display: none;
+}
+
+.store-profile-card .partner-profile-editor > label.has-image {
+  border-style: solid;
+}
+
+.store-profile-card .partner-profile-editor > label > img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+}
+
+.store-profile-card .partner-profile-editor > label em {
+  font-style: normal;
+}
+
+.store-profile-card .verification-help {
+  align-items: flex-start;
+}
+
+.store-profile-card .profile-actions .button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+  .store-mypage-layout {
+    padding-inline: 0;
+  }
+  .store-profile-card .partner-profile-editor > label {
+    min-height: 160px;
+  }
+}

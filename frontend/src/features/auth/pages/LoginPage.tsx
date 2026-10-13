@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../components/authLayout";
-import PasswordField from "../components/passwordField";
-import FormField from "../components/formField";
+import AuthLayout from "../components/AuthLayout";
+import PasswordField from "../components/PasswordField";
+import FormField from "../components/FormField";
 import Icon from "../../../components/common/icon";
 import { login } from "../authApi";
 

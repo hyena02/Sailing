@@ -51,7 +51,7 @@ function Header() {
         navigate("/mypage/company");
         break;
       case "STORE":
-        navigate("/mypage/stroe");
+        navigate("/mypage/store");
         break;
       case "ADMIN":
         navigate("/mypage/admin");

@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../components/authLayout";
+import AuthLayout from "../components/AuthLayout";
 import Icon, { type IconName } from "../../../components/common/icon";
 
 const signupTypes: Array<{ type: string; path: string; icon: IconName; title: string; description: string; detail: string }> = [
   { type: "PERSONAL", path: "/signup/personal", icon: "user", title: "일반회원", description: "바다에서 새로운 커리어를 찾고 계신가요?", detail: "채용공고 지원 · 관심 공고 · 커뮤니티" },
   { type: "COMPANY", path: "/signup/company", icon: "building", title: "기업회원", description: "좋은 해운 인재를 채용하고 싶으신가요?", detail: "구인공고 등록 · 인재 검색 · 기업 관리" },
-  { type: "PARTNER", path: "/signup/vendor", icon: "anchor", title: "업체회원", description: "항만·선박 서비스를 알리고 싶으신가요?", detail: "업체 등록 · 서비스 홍보 · 고객 연결" },
+  { type: "PARTNER", path: "/signup/store", icon: "anchor", title: "업체회원", description: "항만·선박 서비스를 알리고 싶으신가요?", detail: "업체 등록 · 서비스 홍보 · 고객 연결" },
 ];
 
 export default function Signup() {

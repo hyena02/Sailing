@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../components/authLayout";
-import AccountFields from "../components/accountFields";
-import ChoiceGroup from "../components/choiceGroup";
-import FormField from "../components/formField";
+import AuthLayout from "../components/AuthLayout";
+import AccountFields from "../components/AccountFields";
+import ChoiceGroup from "../components/ChoiceGroup";
+import FormField from "../components/FormField";
 import { FormActions, SectionHeading, SignupTop, SuccessNotice } from "../components/SignupParts";
 
 const initialForm = { 

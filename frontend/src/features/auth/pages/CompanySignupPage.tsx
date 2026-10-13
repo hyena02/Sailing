@@ -6,7 +6,17 @@ import FormField from "../components/formField";
 import Icon from "../../../components/common/icon";
 import { FormActions, SectionHeading, SignupTop, SuccessNotice } from "../components/SignupParts";
 
-const initialForm = { companyName: "", businessNumber: "", manager: "", phone: "", email: "", username: "", password: "", confirmPassword: "" };
+const initialForm = {
+  companyName: "",
+  businessNumber: "",
+  address: "",
+  manager: "",
+  phone: "",
+  email: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+};
 
 export default function CompanySignup() {
   const navigate = useNavigate();
@@ -20,15 +30,82 @@ export default function CompanySignup() {
     const numbers = value.replace(/\D/g, "").slice(0, 10);
     return [numbers.slice(0, 3), numbers.slice(3, 5), numbers.slice(5, 10)].filter(Boolean).join("-");
   };
+  const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
+
+  if (
+    !form.companyName.trim() ||
+    !form.businessNumber.trim() ||
+    !form.address.trim() ||
+    !form.manager.trim() ||
+    !form.phone.trim() ||
+    !form.email.trim() ||
+    !form.username.trim() ||
+    !form.password ||
+    form.password !== form.confirmPassword
+  ) {
+    alert("필수 정보를 확인해주세요. 비밀번호도 일치해야 합니다.");
+    return;
+  }
+
+  const requestBody = {
+    loginId: form.username.trim(),
+    password: form.password,
+    name: form.manager.trim(),
+    email: form.email.trim(),
+    phone: form.phone.trim(),
+    companyName: form.companyName.trim(),
+    businessNumber: form.businessNumber.replace(/\D/g, ""),
+    address: form.address.trim(),
+    logoImage: null,
+  };
+
+  try {
+    const response = await fetch(
+      "http://localhost:8080/api/companies/signup",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        data?.message ?? `기업회원 가입 실패 (${response.status})`
+      );
+    }
+
+    alert("기업회원 가입이 완료되었습니다. 로그인해주세요.");
+    navigate("/login", { replace: true });
+  } catch (error) {
+    console.error("기업회원 가입 오류:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "기업회원 가입 중 오류가 발생했습니다."
+    );
+  }
+};
+
 
   return (
     <AuthLayout wide title="좋은 인재와 기업을 연결합니다">
       <SignupTop title="기업회원 가입" subtitle="구인공고 등록을 위한 기업 정보를 입력해주세요." onBack={() => navigate("/signup")} />
-      <form className="auth-form signup-form" onSubmit={(event) => { event.preventDefault(); setCompleted(true); }}>
+      <form className="auth-form signup-form" onSubmit={handleSubmit}>
         <div className="form-section">
           <SectionHeading number="01" title="기업 기본 정보" description="기업 확인과 채용 담당자 연락에 사용됩니다." />
           <div className="form-grid">
             <FormField label="기업명" name="companyName" value={form.companyName} onChange={(value) => update("companyName", value)} placeholder="기업명을 입력해주세요" required />
+              <FormField label="기업주소" name="address" value={form.address} onChange={(value) => update("address", value) } placeholder="기업의 사업장 주소를 입력해주세요." required />
             <FormField label="사업자등록번호" name="businessNumber" value={form.businessNumber}
               onChange={(value) => update("businessNumber", formatBusinessNumber(value))} placeholder="123-45-67890" required maxLength={12} />
             <FormField label="담당자 이름" name="manager" value={form.manager} onChange={(value) => update("manager", value)} placeholder="채용 담당자 이름" required />

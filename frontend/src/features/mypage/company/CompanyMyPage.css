@@ -1,0 +1,218 @@
+.company-mypage {
+  --company-accent: var(--cyan-600, #0891b2);
+}
+
+.company-mypage-banner {
+  background:
+    radial-gradient(circle at 82% 8%, rgba(34, 211, 238, 0.2), transparent 28%),
+    var(--navy-950, #082f49);
+}
+
+.company-mypage-layout {
+  padding-bottom: 24px;
+}
+
+.company-profile-avatar {
+  color: var(--cyan-600, #0891b2);
+  background: rgba(34, 211, 238, 0.12);
+  border-radius: var(--radius-md, 12px);
+}
+
+.company-mypage-sidebar .profile-summary > span {
+  color: var(--cyan-600, #0891b2);
+}
+
+.company-mypage-sidebar nav button {
+  cursor: pointer;
+}
+
+.company-verification {
+  margin: 0 12px 16px;
+  padding: 14px;
+  border: 1px solid var(--slate-200, #e2e8f0);
+  border-radius: var(--radius-md, 12px);
+  background: var(--slate-50, #f8fafc);
+}
+
+.company-verification__label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--slate-500, #64748b);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.company-verification strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--slate-700, #334155);
+  font-size: 13px;
+}
+
+.company-verification p {
+  margin: 8px 0 0;
+  color: var(--slate-500, #64748b);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.company-verification.is-pending {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.company-verification.is-pending strong {
+  color: #92400e;
+}
+
+.company-verification.is-approved {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+}
+
+.company-verification.is-approved strong {
+  color: #047857;
+}
+
+.company-verification.is-rejected {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.company-verification.is-rejected strong {
+  color: #b91c1c;
+}
+
+.company-profile-card .profile-section:first-of-type {
+  margin-top: 0;
+}
+
+.company-logo-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 13px 14px;
+  border: 1px solid var(--slate-200, #e2e8f0);
+  border-radius: var(--radius-sm, 8px);
+  color: var(--slate-600, #475569);
+  background: var(--slate-50, #f8fafc);
+}
+
+.company-logo-note > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--cyan-600, #0891b2);
+}
+
+.company-logo-note p {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.company-logo-note strong {
+  color: var(--slate-800, #1e293b);
+}
+
+.company-profile-card .mypage-error p {
+  margin: 6px 0 12px;
+}
+
+@media (max-width: 767px) {
+  .company-verification {
+    margin: 0 10px 12px;
+  }
+
+  .company-profile-card .profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sailingg-main 마이페이지 원본 디자인의 기업회원 확장 영역 */
+.company-mypage .profile-image-editor > div > label input,
+.store-mypage .profile-image-editor > div > label input {
+  display: none;
+}
+
+.manager-field > div.manager-field__control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.manager-field__control input {
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  outline: none;
+  color: var(--slate-700);
+  background: var(--slate-50);
+  font: inherit;
+  font-size: 13px;
+}
+
+.manager-field__control button {
+  padding: 0 13px;
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius-sm);
+  color: var(--navy-950);
+  background: var(--white);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.mypage-capability-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 26px;
+  padding: 13px 14px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  color: var(--slate-600);
+  background: var(--slate-50);
+}
+
+.mypage-capability-note > svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--cyan-600);
+}
+
+.mypage-capability-note p {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.mypage-capability-note strong {
+  color: var(--navy-950);
+  font-size: 12px;
+}
+
+.manager-note,
+.preview-only-note {
+  color: var(--slate-500);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.preview-only-note {
+  margin-top: 18px !important;
+  padding-top: 12px;
+  border-top: 1px solid var(--slate-200);
+}
+
+@media (max-width: 767px) {
+  .manager-field > div.manager-field__control {
+    grid-template-columns: 1fr;
+  }
+}
