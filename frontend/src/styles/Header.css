@@ -150,7 +150,7 @@
   color: var(--slate-400);
 }
 
-.header-logout {
+.button-logout {
   padding: 9px 10px;
   border: 1px solid var(--slate-200);
   border-radius: var(--radius-sm);
@@ -178,7 +178,7 @@
     font-size: 11px;
   }
 
-  .header-logout {
+  .button-logout {
     padding: 8px;
     font-size: 10px;
   }

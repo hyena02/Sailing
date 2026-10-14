@@ -3,7 +3,7 @@ import type {
   CompanyMyPageUpdateRequest,
 } from "./companyMyPageTypes";
 
-const API_URL = "http://localhost:8080/api/users/me/company";
+const API_URL = "/api/users/me/company";
 
 export class CompanyMyPageApiError extends Error {
   status: number;

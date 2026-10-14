@@ -29,7 +29,7 @@ function getLoginUser(): LoginUser | null {
 // 라우터(react-router)를 붙이면 <a href> 를 <Link to> 로 바꾸면 됩니다.
 const MENUS = [
   { label: "채용공고", path: "/jobs" },
-  { label: "해운정보", path: "/maritime" },
+  { label: "해운정보", path: "/talents" },
   { label: "한인선식", path: "/stores" },
   { label: "커뮤니티", path: "/community" },
 ];

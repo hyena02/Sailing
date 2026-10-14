@@ -1,156 +1,340 @@
-import { useState } from "react";
+import { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../components/authLayout";
-import AccountFields from "../components/accountFields";
-import FormField from "../components/formField";
+
+import Header from "../../../components/common/header";
+import Footer from "../../../components/common/footer";
 import Icon from "../../../components/common/icon";
-import { FormActions, SectionHeading, SignupTop, SuccessNotice } from "../components/SignupParts";
+import ProfileField from "../../mypage/components/ProfileField";
+import ProfileSection from "../../mypage/components/ProfileSection";
+import {CompanyMyPageApiError,getCompanyMyPage,updateCompanyMyPage,} from "../../mypage/company/companyMyPageApi";
+import type {CompanyMyPageResponse,CompanyMyPageUpdateRequest,} from "../../mypage/company/companyMyPageTypes";
 
-const initialForm = {
-  companyName: "",
-  businessNumber: "",
-  address: "",
-  manager: "",
-  phone: "",
+import "../MyPage.css";
+import "./CompanyMyPage.css";
+
+type FormState = CompanyMyPageUpdateRequest;
+type Manager = {
+  id: number;
+  name: string;
+  position: string;
+  phone: string;
+  email: string;
+  primary: boolean;
+};
+
+type LocalFields = { website: string; introduction: string };
+
+const emptyForm: FormState = {
+  name: "",
   email: "",
-  username: "",
-  password: "",
-  confirmPassword: "",
+  phone: "",
+  companyName: "",
+  address: "",
+  logoImage: null,
 };
 
-export default function CompanySignup() {
+function toForm(profile: CompanyMyPageResponse): FormState {
+  return {
+    name: profile.name ?? "",
+    email: profile.email ?? "",
+    phone: profile.phone ?? "",
+    companyName: profile.companyName ?? "",
+    address: profile.address ?? "",
+    logoImage: profile.logoImage ?? null,
+  };
+}
+
+function verificationCopy(status?: string | null) {
+  switch (status) {
+    case "APPROVED":
+      return { label: "승인 완료", className: "is-approved", description: "기업 인증이 완료되었습니다." };
+    case "REJECTED":
+      return { label: "승인 반려", className: "is-rejected", description: "등록 정보를 확인한 뒤 관리자에게 문의해주세요." };
+    case "PENDING":
+      return { label: "검토 중", className: "is-pending", description: "기업 정보가 관리자 확인을 기다리고 있습니다." };
+    default:
+      return { label: "상태 확인 필요", className: "is-pending", description: "현재 인증 상태를 확인할 수 없습니다." };
+  }
+}
+
+export default function CompanyMyPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState(initialForm);
-  const [fileName, setFileName] = useState("");
-  const [submitLater, setSubmitLater] = useState(false);
-  const [help, setHelp] = useState<"certificate" | "registration" | null>(null);
-  const [completed, setCompleted] = useState(false);
-  const update = (field: keyof typeof form, value: string) => setForm((current) => ({ ...current, [field]: value }));
-  const formatBusinessNumber = (value: string) => {
-    const numbers = value.replace(/\D/g, "").slice(0, 10);
-    return [numbers.slice(0, 3), numbers.slice(3, 5), numbers.slice(5, 10)].filter(Boolean).join("-");
+  const [profile, setProfile] = useState<CompanyMyPageResponse | null>(null);
+  const [form, setForm] = useState<FormState>(emptyForm);
+  const [localFields, setLocalFields] = useState<LocalFields>({ website: "", introduction: "" });
+  const [logoPreview, setLogoPreview] = useState("");
+  const [documentName, setDocumentName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [managerOpen, setManagerOpen] = useState(false);
+  const [managers, setManagers] = useState<Manager[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getCompanyMyPage()
+      .then((data) => {
+        if (cancelled) return;
+        setProfile(data);
+        setForm(toForm(data));
+        setLogoPreview(data.logoImage ?? "");
+        setManagers([{
+          id: data.userId ?? Date.now(),
+          name: data.name ?? "",
+          position: "대표 담당자",
+          phone: data.phone ?? "",
+          email: data.email ?? "",
+          primary: true,
+        }]);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        if (err instanceof CompanyMyPageApiError && err.status === 401) {
+          navigate("/login", { replace: true });
+          return;
+        }
+        setError(err instanceof Error ? err.message : "기업회원 정보를 불러오지 못했습니다.");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [navigate]);
+
+  const update = (field: keyof FormState, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setError("");
+    setNotice("");
   };
-  const handleSubmit = async (
-  event: React.FormEvent<HTMLFormElement>
-) => {
-  event.preventDefault();
 
-  if (
-    !form.companyName.trim() ||
-    !form.businessNumber.trim() ||
-    !form.address.trim() ||
-    !form.manager.trim() ||
-    !form.phone.trim() ||
-    !form.email.trim() ||
-    !form.username.trim() ||
-    !form.password ||
-    form.password !== form.confirmPassword
-  ) {
-    alert("필수 정보를 확인해주세요. 비밀번호도 일치해야 합니다.");
-    return;
-  }
-
-  const requestBody = {
-    loginId: form.username.trim(),
-    password: form.password,
-    name: form.manager.trim(),
-    email: form.email.trim(),
-    phone: form.phone.trim(),
-    companyName: form.companyName.trim(),
-    businessNumber: form.businessNumber.replace(/\D/g, ""),
-    address: form.address.trim(),
-    logoImage: null,
-  };
-
-  try {
-    const response = await fetch(
-      "http://localhost:8080/api/companies/signup",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(requestBody),
-      }
-    );
-
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      throw new Error(
-        data?.message ?? `기업회원 가입 실패 (${response.status})`
-      );
+  const uploadLogoPreview = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("JPG 또는 PNG 이미지 파일을 선택해주세요.");
+      return;
     }
+    setLogoPreview(URL.createObjectURL(file));
+    setNotice("");
+  };
 
-    alert("기업회원 가입이 완료되었습니다. 로그인해주세요.");
-    navigate("/login", { replace: true });
-  } catch (error) {
-    console.error("기업회원 가입 오류:", error);
+  const saveProfile = async () => {
+    if (saving) return;
+    setSaving(true);
+    setError("");
+    setNotice("");
+    try {
+      const primary = managers.find((item) => item.primary);
+      const requestBody: CompanyMyPageUpdateRequest = {
+        name: (primary?.name || form.name).trim(),
+        email: (primary?.email || form.email).trim(),
+        phone: (primary?.phone || form.phone).trim(),
+        companyName: form.companyName.trim(),
+        address: form.address.trim(),
+        // 새 파일은 아직 업로드 API가 없으므로 기존 서버 경로를 유지합니다.
+        logoImage: profile?.logoImage ?? null,
+      };
+      const updated = await updateCompanyMyPage(requestBody);
+      setProfile(updated);
+      setForm(toForm(updated));
+      setLogoPreview(updated.logoImage ?? logoPreview);
+      setManagers((items) => items.length
+        ? items.map((item) => item.primary ? {
+            ...item,
+            name: updated.name ?? item.name,
+            phone: updated.phone ?? item.phone,
+            email: updated.email ?? item.email,
+          } : item)
+        : [{ id: updated.userId, name: updated.name, position: "대표 담당자", phone: updated.phone ?? "", email: updated.email ?? "", primary: true }]);
+      setNotice("기업 기본 정보가 저장되었습니다.");
+      setConfirmOpen(false);
+    } catch (err) {
+      if (err instanceof CompanyMyPageApiError && err.status === 401) {
+        navigate("/login", { replace: true });
+        return;
+      }
+      setError(err instanceof Error ? err.message : "정보 저장 중 오류가 발생했습니다.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-    alert(
-      error instanceof Error
-        ? error.message
-        : "기업회원 가입 중 오류가 발생했습니다."
-    );
-  }
-};
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+    setNotice("");
+    setConfirmOpen(true);
+  };
 
+  const resetForm = () => {
+    if (profile) {
+      setForm(toForm(profile));
+      setLogoPreview(profile.logoImage ?? "");
+    }
+    setLocalFields({ website: "", introduction: "" });
+    setDocumentName("");
+    setError("");
+    setNotice("");
+  };
+
+  const verification = verificationCopy(profile?.verificationStatus);
+  const primaryManager = managers.find((item) => item.primary);
 
   return (
-    <AuthLayout wide title="좋은 인재와 기업을 연결합니다">
-      <SignupTop title="기업회원 가입" subtitle="구인공고 등록을 위한 기업 정보를 입력해주세요." onBack={() => navigate("/signup")} />
-      <form className="auth-form signup-form" onSubmit={handleSubmit}>
-        <div className="form-section">
-          <SectionHeading number="01" title="기업 기본 정보" description="기업 확인과 채용 담당자 연락에 사용됩니다." />
-          <div className="form-grid">
-            <FormField label="기업명" name="companyName" value={form.companyName} onChange={(value) => update("companyName", value)} placeholder="기업명을 입력해주세요" required />
-              <FormField label="기업주소" name="address" value={form.address} onChange={(value) => update("address", value) } placeholder="기업의 사업장 주소를 입력해주세요." required />
-            <FormField label="사업자등록번호" name="businessNumber" value={form.businessNumber}
-              onChange={(value) => update("businessNumber", formatBusinessNumber(value))} placeholder="123-45-67890" required maxLength={12} />
-            <FormField label="담당자 이름" name="manager" value={form.manager} onChange={(value) => update("manager", value)} placeholder="채용 담당자 이름" required />
-            <FormField label="담당자 연락처" name="phone" value={form.phone} onChange={(value) => update("phone", value)} placeholder="010-0000-0000" required />
-            <FormField label="담당자 이메일" name="email" type="email" value={form.email} onChange={(value) => update("email", value)} placeholder="hr@company.com" required />
+    <div className="subpage mypage company-mypage">
+      <Header />
+      <main className="mypage-main">
+        <section className="mypage-banner company-mypage-banner">
+          <div className="container">
+            <span>COMPANY PROFILE</span>
+            <h1>기업회원 마이페이지</h1>
+            <p>기업 프로필과 채용 담당자 정보를 확인하고 관리하세요.</p>
           </div>
+        </section>
+
+        <div className="container mypage-layout company-mypage-layout">
+          <aside className="mypage-sidebar company-mypage-sidebar">
+            <div className="profile-summary">
+              <div className="profile-avatar company-profile-avatar">
+                {logoPreview ? <img src={logoPreview} alt="기업 로고 미리보기" /> : <Icon name="building" size={34} />}
+              </div>
+              <strong>{form.companyName || "기업회원"}</strong>
+              <span>선사·기업 회원</span>
+              {profile?.loginId && <small className="profile-login-id">@{profile.loginId}</small>}
+            </div>
+            <nav aria-label="기업회원 마이페이지 메뉴">
+              <button type="button" className="is-active" aria-current="page"><Icon name="building" size={18} />기업 정보 관리</button>
+              <button type="button" onClick={() => navigate("/jobs/new")}><Icon name="briefcase" size={18} />구인공고 등록</button>
+              <button type="button" onClick={() => setManagerOpen(true)}><Icon name="user" size={18} />담당자 관리</button>
+            </nav>
+            <div className={`company-verification ${verification.className}`}>
+              <span className="company-verification__label">기업 인증 상태</span>
+              <strong>{verification.label}</strong>
+              <p>{verification.description}</p>
+            </div>
+          </aside>
+
+          <section className="profile-card company-profile-card">
+            <div className="profile-card__heading">
+              <div><span>PROFILE SETTINGS</span><h2>기업 정보 수정</h2></div>
+              <em>필수 정보는 *로 표시됩니다.</em>
+            </div>
+
+            {loading ? <p className="mypage-state" role="status">기업회원 정보를 불러오는 중입니다...</p> : !profile ? (
+              <div className="mypage-error" role="alert">
+                <strong>기업회원 정보를 불러오지 못했습니다.</strong><p>{error}</p>
+                <button type="button" className="button button--outline" onClick={() => window.location.reload()}>다시 시도</button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="profile-image-editor">
+                  <div className="profile-avatar profile-avatar--large company-profile-avatar">
+                    {logoPreview ? <img src={logoPreview} alt="기업 로고 미리보기" /> : <Icon name="building" size={40} />}
+                  </div>
+                  <div>
+                    <strong>기업 로고</strong><p>JPG, PNG 파일을 선택해 화면 미리보기를 확인할 수 있습니다.</p>
+                    <label className="button button--outline">이미지 변경<input type="file" accept="image/png,image/jpeg" onChange={uploadLogoPreview} /></label>
+                  </div>
+                </div>
+
+                <ProfileSection title="계정 정보" description="로그인 계정과 사업자등록번호는 보안을 위해 이 화면에서 변경할 수 없습니다.">
+                  <div className="profile-form-grid">
+                    <ProfileField label="로그인 ID" value={profile.loginId ?? ""} onChange={() => undefined} disabled />
+                    <ProfileField label="사업자등록번호" value={profile.businessNumber ?? ""} onChange={() => undefined} disabled />
+                  </div>
+                </ProfileSection>
+
+                <ProfileSection title="기업 기본 정보" description="회원가입 시 등록한 회사 정보와 대표 담당자 연락처를 관리합니다.">
+                  <div className="profile-form-grid">
+                    <ProfileField label="기업명" value={form.companyName} onChange={(value) => update("companyName", value)} required maxLength={200} placeholder="기업명을 입력해주세요" />
+                    <label className="profile-field manager-field">
+                      <span>대표 담당자 *</span>
+                      <div className="manager-field__control"><input value={primaryManager?.name ?? form.name} readOnly /><button type="button" onClick={() => setManagerOpen(true)}>담당자 관리</button></div>
+                    </label>
+                    <ProfileField label="담당자 연락처" type="tel" value={form.phone} onChange={(value) => { update("phone", value); setManagers((items) => items.map((item) => item.primary ? { ...item, phone: value } : item)); }} maxLength={30} placeholder="051-123-4567" />
+                    <ProfileField label="담당자 이메일" type="email" value={form.email} onChange={(value) => { update("email", value); setManagers((items) => items.map((item) => item.primary ? { ...item, email: value } : item)); }} maxLength={255} placeholder="company@example.com" />
+                    <ProfileField label="홈페이지 주소" value={localFields.website} onChange={(value) => setLocalFields((prev) => ({ ...prev, website: value }))} placeholder="https://example.com" />
+                    <ProfileField label="기업 주소" value={form.address} onChange={(value) => update("address", value)} required maxLength={500} placeholder="기업 주소를 입력해주세요" wide />
+                    <label className="profile-field is-wide"><span>기업 소개</span><textarea value={localFields.introduction} onChange={(event) => setLocalFields((prev) => ({ ...prev, introduction: event.target.value }))} maxLength={500} placeholder="기업과 사업을 소개해주세요." /><small>{localFields.introduction.length} / 500</small></label>
+                  </div>
+                </ProfileSection>
+
+                <ProfileSection title="기업 인증" description="기업 인증 상태와 제출 서류를 확인합니다.">
+                  <div className="verification-card">
+                    <div className="verification-status">
+                      <span className={`status-dot ${profile.verificationStatus === "APPROVED" ? "is-approved" : profile.verificationStatus === "REJECTED" ? "is-rejected" : ""}`} />
+                      <div><span>현재 인증 상태</span><strong>{verification.label}</strong><p>{verification.description}</p></div>
+                    </div>
+                    <label className={`document-upload ${documentName ? "has-file" : ""}`}>
+                      <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(event) => setDocumentName(event.target.files?.[0]?.name ?? "")} />
+                      <span><Icon name="briefcase" size={22} /></span>
+                      <div><strong>{documentName || "인증 서류를 선택해주세요"}</strong><small>{documentName ? "선택된 파일입니다. 서버 업로드는 아직 연결되지 않았습니다." : "PDF, JPG, PNG 파일 · 파일 선택 미리보기"}</small></div>
+                      <em>{documentName ? "파일 변경" : "서류 선택"}</em>
+                    </label>
+                    <p className="verification-help"><Icon name="bell" size={16} />인증 서류 업로드 API가 연결되기 전까지는 파일이 서버에 저장되지 않습니다.</p>
+                  </div>
+                </ProfileSection>
+
+                <div className="mypage-capability-note"><Icon name="bell" size={17} /><p><strong>현재 서버 저장 범위 안내</strong><span>담당자 이름·연락처·이메일, 기업명, 기업 주소가 저장됩니다.미리보기</span></p></div>
+                {error && <div className="mypage-error" role="alert">{error}</div>}
+                {notice && <div className="profile-saved" role="status"><Icon name="bell" size={18} />{notice}</div>}
+                <div className="profile-actions">
+                  <button type="button" className="button button--outline" onClick={resetForm} disabled={saving}>변경 취소</button>
+                  <button type="submit" className="button button--dark" disabled={saving}><>{saving ? "저장 중..." : "변경사항 저장"}</> {!saving && <Icon name="arrow" size={18} />}</button>
+                </div>
+              </form>
+            )}
+          </section>
         </div>
-        <div className="form-section">
-          <SectionHeading number="02" title="기업 인증" description="신뢰할 수 있는 채용 환경을 위해 서류를 확인합니다." />
-          <label className={`file-upload ${fileName ? "has-file" : ""}`}>
-            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")} />
-            <span className="file-upload__icon"><Icon name="briefcase" size={24} /></span>
-            {fileName ? <><strong>{fileName}</strong><small>다른 파일을 선택하려면 클릭해주세요.</small></> :
-              <><strong>사업자등록증 또는 사업자등록증명원</strong><small>PDF, JPG, PNG · 최대 10MB</small><em>파일 선택</em></>}
-          </label>
-          <div className="document-help">
-            <button type="button" onClick={() => setHelp("certificate")}>사업자등록증명원이 무엇인가요?</button>
-            <button type="button" onClick={() => setHelp("registration")}>사업자등록증이 무엇인가요?</button>
-          </div>
-          <label className="later-check"><input type="checkbox" checked={submitLater} onChange={(event) => setSubmitLater(event.target.checked)} /><span />
-            <div><strong>인증 서류를 나중에 제출할게요</strong><small>마이페이지에서 제출할 수 있으며, 인증 전 일부 기능이 제한될 수 있습니다.</small></div>
-          </label>
+      </main>
+      <Footer />
+
+      {confirmOpen && <div className="password-modal-backdrop" onMouseDown={() => !saving && setConfirmOpen(false)}>
+        <div className="password-modal" role="dialog" aria-modal="true" aria-labelledby="company-save-confirm-title" onMouseDown={(event) => event.stopPropagation()}>
+          <button type="button" className="password-modal__close" onClick={() => !saving && setConfirmOpen(false)} aria-label="닫기"><Icon name="x" size={20} /></button>
+          <span className="password-modal__icon"><Icon name="user" size={24} /></span>
+          <h2 id="company-save-confirm-title">변경사항 저장</h2>
+          <p>입력한 기업 기본 정보를 저장하시겠습니까?</p>
+          <div className="password-modal__actions"><button type="button" className="button button--outline" onClick={() => setConfirmOpen(false)} disabled={saving}>취소</button><button type="button" className="button button--dark" onClick={() => void saveProfile()} disabled={saving}>{saving ? "저장 중..." : "저장하기"}</button></div>
         </div>
-        <AccountFields username={form.username} password={form.password} confirmPassword={form.confirmPassword}
-          onChange={(field, value) => update(field, value)} sectionNumber="03" />
-        {completed && <SuccessNotice />}
-        <FormActions onBack={() => navigate("/signup")} label="기업회원으로 가입하기" />
-      </form>
-      {help && <DocumentModal type={help} onClose={() => setHelp(null)} />}
-    </AuthLayout>
+      </div>}
+
+      {managerOpen && <ManagerModal managers={managers} onChange={setManagers} onClose={() => setManagerOpen(false)} />}
+    </div>
   );
 }
 
-function DocumentModal({ type, onClose }: { type: "certificate" | "registration"; onClose: () => void }) {
-  const certificate = type === "certificate";
-  return (
-    <div className="modal-backdrop" onMouseDown={onClose}>
-      <div className="help-modal" onMouseDown={(event) => event.stopPropagation()}>
-        <button className="help-modal__close" onClick={onClose}><Icon name="x" size={20} /></button>
-        <span className="help-modal__icon"><Icon name="building" size={24} /></span>
-        <h2>{certificate ? "사업자등록증명원이란?" : "사업자등록증이란?"}</h2>
-        <p>{certificate ? "현재 사업자등록 상태를 공식적으로 증명하는 국세청 발급 문서입니다." : "사업자가 세무서에 등록을 완료했음을 확인하는 기본 증명 서류입니다."}</p>
-        {certificate && <ol><li>홈택스에 로그인합니다.</li><li>국세증명·사업자등록 메뉴를 선택합니다.</li><li>사업자등록증명을 발급해 PDF로 저장합니다.</li></ol>}
-        <button className="auth-submit" onClick={onClose}>확인했어요</button>
+function ManagerModal({ managers, onChange, onClose }: { managers: Manager[]; onChange: (managers: Manager[]) => void; onClose: () => void }) {
+  const [draft, setDraft] = useState({ name: "", position: "", phone: "", email: "" });
+  const [message, setMessage] = useState("");
+  const addManager = () => {
+    if (!draft.name.trim() || !draft.phone.trim() || !draft.email.trim()) {
+      setMessage("이름, 연락처, 이메일을 입력해주세요.");
+      return;
+    }
+    onChange([...managers, { id: Date.now(), ...draft, primary: managers.length === 0 }]);
+    setDraft({ name: "", position: "", phone: "", email: "" });
+    setMessage("추가 담당자는 현재 화면 내 임시 목록에만 등록됩니다.");
+  };
+  return <div className="password-modal-backdrop" onMouseDown={onClose}>
+    <div className="manager-modal" role="dialog" aria-modal="true" aria-labelledby="company-manager-title" onMouseDown={(event) => event.stopPropagation()}>
+      <button type="button" className="password-modal__close" onClick={onClose} aria-label="닫기"><Icon name="x" size={20} /></button>
+      <div className="manager-modal__heading"><span><Icon name="user" size={22} /></span><div><h2 id="company-manager-title">채용 담당자 관리</h2><p>구인공고 등록 시 선택할 담당자와 대표 담당자를 관리합니다.</p></div></div>
+      <div className="manager-list">
+        {managers.map((manager) => <div className="manager-item" key={manager.id}>
+          <span className="manager-avatar">{manager.name.slice(0, 1) || "담"}</span>
+          <div><strong>{manager.name} <small>{manager.position || "담당자"}</small></strong><p>{manager.phone} · {manager.email}</p></div>
+          <button type="button" className={manager.primary ? "is-primary" : ""} onClick={() => onChange(managers.map((item) => ({ ...item, primary: item.id === manager.id })))}>{manager.primary ? "대표 담당자" : "대표로 설정"}</button>
+          <button type="button" className="manager-remove" aria-label={`${manager.name} 삭제`} disabled={manager.primary} onClick={() => onChange(managers.filter((item) => item.id !== manager.id))}><Icon name="x" size={15} /></button>
+        </div>)}
       </div>
+      <div className="manager-add"><h3>새 담당자 등록</h3><div>
+        <input aria-label="담당자 이름" placeholder="이름" value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} />
+        <input aria-label="담당자 직책" placeholder="직책" value={draft.position} onChange={(event) => setDraft({ ...draft, position: event.target.value })} />
+        <input aria-label="담당자 연락처" placeholder="연락처" value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} />
+        <input aria-label="담당자 이메일" type="email" placeholder="이메일" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} />
+      </div><button type="button" className="button button--outline" onClick={addManager}>담당자 추가</button>{message && <p className="manager-note" role="status">{message}</p>}</div>
+      <div className="manager-modal__actions"><button type="button" className="button button--dark" onClick={onClose}>확인</button></div>
     </div>
-  );
+  </div>;
 }

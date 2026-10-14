@@ -1,0 +1,32 @@
+.talents-page { background: var(--slate-50); }
+.talents-hero { padding: 70px 0 76px; color: var(--white); background: radial-gradient(circle at 82% 20%, rgba(34,211,238,.22), transparent 28%), var(--navy-950); }
+.talents-hero span, .talents-heading span { color: var(--cyan-300); font-family: var(--font-display); font-size: 12px; font-weight: 900; letter-spacing: .14em; }
+.talents-hero h1 { margin: 14px 0; font-size: 42px; line-height: 1.25; }
+.talents-hero p { margin: 0; color: var(--slate-300); font-size: 15px; }
+.talents-board { padding-top: 60px; padding-bottom: 90px; }
+.talents-heading { display: flex; align-items: flex-end; justify-content: space-between; }
+.talents-heading h2 { margin: 7px 0 4px; color: var(--navy-950); font-size: 30px; }
+.talents-heading p { margin: 0; color: var(--slate-500); font-size: 14px; }
+.talents-heading > strong { color: var(--cyan-600); font-size: 13px; }
+.talent-filters { display: flex; gap: 10px; margin: 26px 0; padding: 16px; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); background: var(--white); }
+.talent-filters select { min-height: 42px; padding: 0 34px 0 12px; border: 1px solid var(--slate-200); border-radius: var(--radius-sm); background: var(--white); font: inherit; font-size: 13px; }
+.talent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.talent-card { padding: 24px; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); background: var(--white); box-shadow: 0 2px 8px rgba(6,29,50,.04); }
+.talent-card__top { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; }
+.talent-card__top > span { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; color: var(--navy-950); background: var(--cyan-300); font-size: 18px; font-weight: 900; }
+.talent-card h3 { margin: 0; color: var(--navy-950); font-size: 17px; }
+.talent-card__top strong { display: block; margin-top: 3px; color: var(--cyan-600); font-size: 12px; }
+.talent-card__top em { padding: 6px 9px; border-radius: 999px; color: var(--cyan-600); background: rgba(34,211,238,.1); font-size: 11px; font-style: normal; font-weight: 800; }
+.talent-card > p { margin: 18px 0; color: var(--slate-600); font-size: 13px; line-height: 1.7; }
+.talent-card dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding: 15px; border-radius: var(--radius-sm); background: var(--slate-50); }
+.talent-card dl div { display: grid; grid-template-columns: 60px 1fr; font-size: 12px; }
+.talent-card dt { color: var(--slate-400); }.talent-card dd { margin: 0; color: var(--slate-700); font-weight: 700; }
+.talent-card footer { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--slate-100); color: var(--slate-500); font-size: 12px; }
+.talent-card footer span { display: flex; align-items: center; gap: 5px; }
+@media (max-width: 767px) { .talent-grid { grid-template-columns: 1fr; } .talent-filters { overflow-x: auto; } .talent-filters select { flex: 0 0 auto; } .talent-card footer { align-items: flex-start; flex-direction: column; gap: 7px; } }
+.talent-admin-notice { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; padding: 12px; border-radius: var(--radius-sm); color: var(--navy-950); background: rgba(34,211,238,.1); font-size: 12px; font-weight: 800; }
+.talent-card { position: relative; }
+.talent-admin-actions { display: flex; justify-content: flex-end; gap: 6px; margin: -8px -8px 14px; }
+.talent-admin-actions button { padding: 6px 8px; border-radius: 5px; color: var(--slate-600); background: var(--slate-100); font-size: 10px; font-weight: 800; }
+.talent-admin-actions button:last-child { color: var(--rose-500); background: var(--rose-50); }
+.talent-card.is-sanctioned { border-color: var(--rose-500); background: var(--rose-50); opacity: .75; }

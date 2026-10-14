@@ -6,15 +6,8 @@ import Footer from "../../components/common/footer";
 import Icon from "../../components/common/icon";
 import ProfileField from "../mypage/components/ProfileField";
 import ProfileSection from "../mypage/components/ProfileSection";
-import {
-  CompanyMyPageApiError,
-  getCompanyMyPage,
-  updateCompanyMyPage,
-} from "../mypage/company/companyMyPageApi";
-import type {
-  CompanyMyPageResponse,
-  CompanyMyPageUpdateRequest,
-} from "../mypage/company/companyMyPageTypes";
+import {CompanyMyPageApiError,getCompanyMyPage,updateCompanyMyPage,} from "../mypage/company/companyMyPageApi";
+import type {CompanyMyPageResponse,CompanyMyPageUpdateRequest,} from "../mypage/company/companyMyPageTypes";
 
 import "../MyPage.css";
 import "./CompanyMyPage.css";
@@ -282,7 +275,7 @@ export default function CompanyMyPage() {
                   </div>
                 </ProfileSection>
 
-                <div className="mypage-capability-note"><Icon name="bell" size={17} /><p><strong>현재 서버 저장 범위 안내</strong><span>담당자 이름·연락처·이메일, 기업명, 기업 주소가 저장됩니다. 홈페이지·기업 소개·담당자 추가 목록·새 로고 파일·인증 서류는 현재 DB/API에 저장 기능이 없어 화면 미리보기만 제공됩니다.</span></p></div>
+                <div className="mypage-capability-note"><Icon name="bell" size={17} /><p><strong>현재 서버 저장 범위 안내</strong><span>담당자 이름·연락처·이메일, 기업명, 기업 주소가 저장됩니다. 미리보기</span></p></div>
                 {error && <div className="mypage-error" role="alert">{error}</div>}
                 {notice && <div className="profile-saved" role="status"><Icon name="bell" size={18} />{notice}</div>}
                 <div className="profile-actions">

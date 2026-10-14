@@ -30,7 +30,7 @@ export default function PersonalActivityPage({
             <span>{isLikes ? "SAVED JOBS" : "MY POSTS"}</span>
             <h2>{isLikes ? "관심 공고" : "내가 쓴 글"}</h2>
           </div>
-          <em>실제 데이터 연동 전</em>
+          <em>실제 데이터 연동 안함아직!!</em>
         </div>
 
         <div className="activity-empty">
